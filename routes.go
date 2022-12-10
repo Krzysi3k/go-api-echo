@@ -27,7 +27,7 @@ func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 		if strings.Contains(keyName, "docker:metrics:") || keyName == "termometr-payload" {
 			return e.String(200, val)
 		}
-		if strings.Contains(val, "[") || strings.Contains(val, "{") {
+		if json.Valid([]byte(val)) {
 			return e.JSONBlob(200, []byte(val))
 		} else {
 			return e.JSON(200, map[string]interface{}{"payload": val})
@@ -50,7 +50,6 @@ func GetRedisInfo(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 		for i := 0; i < len(keys); i++ {
 			if val[i] != nil {
 				if v, ok := val[i].(string); ok {
-					// if strings.Contains(v, "{") || strings.Contains(v, "[") {
 					if json.Valid([]byte(v)) {
 						sb.WriteString(`"` + keys[i] + `":` + v + ",")
 					} else {
@@ -69,7 +68,8 @@ func GetDockerInfo(ctx context.Context, dockerClient *client.Client) echo.Handle
 
 	return func(c echo.Context) error {
 		queryParam := c.QueryParam("items")
-		if queryParam == "containers" {
+		switch queryParam {
+		case "containers":
 			containerList, err := dockerClient.ContainerList(ctx, types.ContainerListOptions{All: true})
 			logError(err)
 			containers := []string{}
@@ -79,7 +79,7 @@ func GetDockerInfo(ctx context.Context, dockerClient *client.Client) echo.Handle
 				containers = append(containers, line)
 			}
 			return c.JSON(200, map[string]interface{}{"containers": containers})
-		} else if queryParam == "images" {
+		case "images":
 			imagesList, err := dockerClient.ImageList(ctx, types.ImageListOptions{All: true})
 			logError(err)
 			images := []string{}
@@ -91,7 +91,7 @@ func GetDockerInfo(ctx context.Context, dockerClient *client.Client) echo.Handle
 				images = append(images, line)
 			}
 			return c.JSON(200, map[string]interface{}{"images": images})
-		} else {
+		default:
 			return c.JSON(400, map[string]interface{}{"payload": "wrong or missing query param"})
 		}
 	}
