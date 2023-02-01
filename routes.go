@@ -9,7 +9,10 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/go-redis/redis/v9"
+
+	// "github.com/go-redis/redis/v9"
+	"github.com/redis/go-redis/v9"
+
 	"github.com/labstack/echo/v4"
 )
 

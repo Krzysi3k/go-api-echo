@@ -5,9 +5,10 @@ import (
 	"log"
 
 	"github.com/docker/docker/client"
-	"github.com/go-redis/redis/v9"
+	// "github.com/go-redis/redis/v9"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
