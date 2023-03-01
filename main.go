@@ -5,6 +5,8 @@ import (
 	"log"
 
 	"github.com/docker/docker/client"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	// "github.com/go-redis/redis/v9"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -33,7 +35,8 @@ func main() {
 	e.GET("/get-redis-data", GetRedisData(ctx, rdb))
 	e.GET("/redis-info", GetRedisInfo(ctx, rdb))
 	e.GET("/docker-info", GetDockerInfo(ctx, dockerClient))
-	e.GET("/metrics", PrometheusMetrics(ctx))
+	e.GET("/random", randomHandler(ctx, rdb))
+	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	e.Logger.Fatal(e.Start(":5001"))
 }

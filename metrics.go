@@ -2,26 +2,41 @@ package main
 
 import (
 	"context"
+	"math/rand"
+	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/redis/go-redis/v9"
 )
 
-var cpuTemp = prometheus.NewGauge(prometheus.GaugeOpts{
-	Name: "cpu_temperature_celsius",
-	Help: "Current temperature of the CPU.",
-})
+var (
+	activeRequests = prometheus.NewGauge(prometheus.GaugeOpts{
+		Name: "active_requests",
+		Help: "The current number of active requests",
+	})
+
+	totalRequests = prometheus.NewCounter(prometheus.CounterOpts{
+		Name: "total_requests",
+		Help: "The total number of requests",
+	})
+)
 
 func init() {
-	prometheus.MustRegister(cpuTemp)
+	prometheus.MustRegister(activeRequests)
+	prometheus.MustRegister(totalRequests)
 }
 
-func PrometheusMetrics(ctx context.Context) echo.HandlerFunc {
-	h := promhttp.Handler()
-	cpuTemp.Set(21)
-	return func(e echo.Context) error {
-		h.ServeHTTP(e.Response().Writer, e.Request())
-		return nil
+func randomHandler(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		value := rand.Intn(100) + 1
+		activeRequests.Set(float64(value))
+		defer activeRequests.Dec()
+
+		rdb.Set(ctx, "num1", value, 0).Result()
+		totalRequests.Inc()
+
+		return c.String(http.StatusOK, strconv.Itoa(value))
 	}
 }
