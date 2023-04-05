@@ -2,19 +2,21 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"log"
+	"os/exec"
 	"strings"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-
-	// "github.com/go-redis/redis/v9"
-	"github.com/redis/go-redis/v9"
-
 	"github.com/labstack/echo/v4"
+	"github.com/redis/go-redis/v9"
 )
+
+//go:embed docker_compose_path.txt
+var composePath string
 
 func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 
@@ -97,6 +99,46 @@ func GetDockerInfo(ctx context.Context, dockerClient *client.Client) echo.Handle
 		default:
 			return c.JSON(400, map[string]interface{}{"payload": "wrong or missing query param"})
 		}
+	}
+}
+
+func RemoveContainer(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+		nameParam := c.QueryParam("name")
+		stopParam := c.QueryParam("stop")
+		if nameParam == "" {
+			return c.JSON(400, map[string]interface{}{"payload": "missing query param"})
+		}
+		containerList, err := dockerClient.ContainerList(ctx, types.ContainerListOptions{All: true})
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, cont := range containerList {
+			for _, cname := range cont.Names {
+				if cname == "/"+nameParam {
+					if stopParam == "true" {
+						if err := dockerClient.ContainerRemove(ctx, cont.ID, types.ContainerRemoveOptions{Force: true}); err != nil {
+							return c.JSON(200, map[string]interface{}{"info": fmt.Sprint(err)})
+						}
+					} else {
+						if err := dockerClient.ContainerRemove(ctx, cont.ID, types.ContainerRemoveOptions{}); err != nil {
+							return c.JSON(200, map[string]interface{}{"info": fmt.Sprint(err)})
+						}
+					}
+					return c.JSON(200, map[string]interface{}{"removed": nameParam})
+				}
+			}
+		}
+		return c.JSON(404, map[string]interface{}{"not found": nameParam})
+	}
+}
+
+func UpContainerStack(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		scriptFile := composePath + "/up.sh"
+		exec.Command("sh", scriptFile).Run()
+		return c.JSON(200, map[string]interface{}{"command": "docker-compose up"})
 	}
 }
 
