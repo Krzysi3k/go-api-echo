@@ -136,8 +136,7 @@ func RemoveContainer(ctx context.Context, dockerClient *client.Client) echo.Hand
 
 func UpContainerStack(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		scriptFile := composePath + "/up.sh"
-		exec.Command("sh", scriptFile).Run()
+		exec.Command("sh", composePath+"/up.sh").Run()
 		return c.JSON(200, map[string]interface{}{"command": "docker-compose up"})
 	}
 }
