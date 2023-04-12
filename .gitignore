@@ -1,3 +1,3 @@
-docker_compose_path.txt
+*.txt
 go-homestack-api
 __debug_bin

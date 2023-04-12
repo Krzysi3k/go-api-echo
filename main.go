@@ -36,6 +36,7 @@ func main() {
 	e.GET("/docker-info", GetDockerInfo(ctx, dockerClient))
 	e.GET("/containers-up", UpContainerStack(ctx, dockerClient))
 	e.DELETE("/container", RemoveContainer(ctx, dockerClient))
+	e.DELETE("/container-metrics", DeleteContainerMetrics(ctx, rdb))
 	e.GET("/random", randomHandler(ctx, rdb))
 	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 

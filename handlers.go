@@ -141,6 +141,14 @@ func UpContainerStack(ctx context.Context, dockerClient *client.Client) echo.Han
 	}
 }
 
+func DeleteContainerMetrics(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		metricKeys := rdb.Keys(ctx, "docker:metrics*").Val()
+		rdb.Del(ctx, metricKeys...)
+		return c.JSON(200, map[string]interface{}{"metrics-removed": metricKeys})
+	}
+}
+
 func logError(err error) {
 	if err != nil {
 		log.Println(err)
