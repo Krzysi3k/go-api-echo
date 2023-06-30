@@ -1,3 +1,4 @@
 *.txt
 go-homestack-api
 __debug_bin
+.env

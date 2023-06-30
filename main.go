@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/docker/docker/client"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/redis/go-redis/v9"
@@ -29,6 +31,18 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"date":"${time_rfc3339}","ip":"${remote_ip}","method":"${method}","status":"${status}","response_time":"${latency_human}","uri":"${uri}","agent":"${user_agent}"}` + "\n",
+	}))
+
+	err = godotenv.Load("/home/krzysiek/go-api-echo/.env")
+	if err != nil {
+		log.Fatal("cannot load .env file")
+	}
+
+	e.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+		if username == os.Getenv("API_USERNAME") && password == os.Getenv("API_PASSWORD") {
+			return true, nil
+		}
+		return false, nil
 	}))
 
 	e.GET("/get-redis-data", GetRedisData(ctx, rdb))
