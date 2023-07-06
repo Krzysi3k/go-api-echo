@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 
+	//	"os"
 	"github.com/docker/docker/client"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -38,21 +38,21 @@ func main() {
 		log.Fatal("cannot load .env file")
 	}
 
-	e.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
-		if username == os.Getenv("API_USERNAME") && password == os.Getenv("API_PASSWORD") {
-			return true, nil
-		}
-		return false, nil
-	}))
+	//	e.Use(middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
+	//		if username == os.Getenv("API_USERNAME") && password == os.Getenv("API_PASSWORD") {
+	//			return true, nil
+	//		}
+	//		return false, nil
+	//	}))
 
-	e.GET("/get-redis-data", GetRedisData(ctx, rdb))
-	e.GET("/redis-info", GetRedisInfo(ctx, rdb))
-	e.GET("/docker-info", GetDockerInfo(ctx, dockerClient))
-	e.GET("/containers-up", UpContainerStack(ctx, dockerClient))
-	e.DELETE("/container", RemoveContainer(ctx, dockerClient))
-	e.DELETE("/container-metrics", DeleteContainerMetrics(ctx, rdb))
-	e.GET("/random", randomHandler(ctx, rdb))
-	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
+	e.GET("/api/v1/get-redis-data", GetRedisData(ctx, rdb))
+	e.GET("/api/v1/redis-info", GetRedisInfo(ctx, rdb))
+	e.GET("/api/v1/docker-info", GetDockerInfo(ctx, dockerClient))
+	e.GET("/api/v1/containers-up", UpContainerStack(ctx, dockerClient))
+	e.DELETE("/api/v1/container", RemoveContainer(ctx, dockerClient))
+	e.DELETE("/api/v1/container-metrics", DeleteContainerMetrics(ctx, rdb))
+	e.GET("/api/v1/random", randomHandler(ctx, rdb))
+	e.GET("/api/v1/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	e.Logger.Fatal(e.Start(":5001"))
 }
