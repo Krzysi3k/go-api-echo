@@ -25,6 +25,10 @@ func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 		if keyName == "" {
 			return e.JSON(400, map[string]string{"payload": "missing query string"})
 		}
+		if keyName == "job:offers" {
+			offers := fetchOffers(ctx, rdb)
+			return e.JSON(200, offers)
+		}
 		val, err := rdb.Get(ctx, keyName).Result()
 		if err != nil {
 			return e.JSON(404, map[string]string{"payload": "key not found"})
