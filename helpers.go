@@ -41,7 +41,7 @@ func fetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
 	for {
 		keys, nextCursor, err := rdb.Scan(ctx, cursor, "*job:offers", int64(count)).Result()
 		if err != nil {
-			return nil
+			log.Fatal("error receiving keys", err)
 		}
 		keyNames = append(keyNames, keys...)
 
@@ -51,8 +51,7 @@ func fetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
 		}
 	}
 
-	var allOffers []JobOffer
-	// var allOffers JobOfferSlice
+	allOffers := make([]JobOffer, 0)
 	result := rdb.MGet(ctx, keyNames...).Val()
 	for _, v := range result {
 		if payload, ok := v.(string); ok {

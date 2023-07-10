@@ -28,9 +28,6 @@ func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 		}
 		if keyName == "job:offers" {
 			offers := fetchOffers(ctx, rdb)
-			if offers == nil {
-				return e.JSON(200, []string{})
-			}
 			fromAmount := e.QueryParam("gt")
 			if fromAmount == "" {
 				return e.JSON(200, offers)
@@ -39,7 +36,7 @@ func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 			if err != nil {
 				return e.JSON(400, map[string]string{"payload": "wrong query param"})
 			}
-			var filteredOffers []JobOffer
+			filteredOffers := make([]JobOffer, 0)
 			for _, i := range offers {
 				if i.Maxsalary >= from {
 					filteredOffers = append(filteredOffers, i)
