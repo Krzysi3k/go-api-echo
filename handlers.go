@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/docker/docker/api/types"
@@ -27,7 +28,24 @@ func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 		}
 		if keyName == "job:offers" {
 			offers := fetchOffers(ctx, rdb)
-			return e.JSON(200, offers)
+			if offers == nil {
+				return e.JSON(200, []string{})
+			}
+			fromAmount := e.QueryParam("gt")
+			if fromAmount == "" {
+				return e.JSON(200, offers)
+			}
+			from, err := strconv.Atoi(fromAmount)
+			if err != nil {
+				return e.JSON(400, map[string]string{"payload": "wrong query param"})
+			}
+			var filteredOffers []JobOffer
+			for _, i := range offers {
+				if i.Maxsalary >= from {
+					filteredOffers = append(filteredOffers, i)
+				}
+			}
+			return e.JSON(200, filteredOffers)
 		}
 		val, err := rdb.Get(ctx, keyName).Result()
 		if err != nil {

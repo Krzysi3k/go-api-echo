@@ -39,7 +39,6 @@ func fetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
 	var keyNames []string
 
 	for {
-
 		keys, nextCursor, err := rdb.Scan(ctx, cursor, "*job:offers", int64(count)).Result()
 		if err != nil {
 			return nil
