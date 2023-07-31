@@ -41,7 +41,7 @@ func fetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
 	for {
 		keys, nextCursor, err := rdb.Scan(ctx, cursor, "*job:offers", int64(count)).Result()
 		if err != nil {
-			log.Fatal("error receiving keys", err)
+			log.Fatal("error while scanning keys", err)
 		}
 		keyNames = append(keyNames, keys...)
 
