@@ -3,7 +3,7 @@ module go-api-echo
 go 1.19
 
 require (
-	github.com/docker/docker v23.0.6+incompatible
+	github.com/docker/docker v24.0.5+incompatible
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/prometheus/client_golang v1.15.1

@@ -108,11 +108,10 @@ func GetDockerInfo(ctx context.Context, dockerClient *client.Client) echo.Handle
 			logError(err)
 			images := []string{}
 			for _, img := range imagesList {
-				if strings.Contains(img.RepoTags[0], "<none>") {
-					continue
+				if len(img.RepoTags) > 0 {
+					line := fmt.Sprintf("%v, %vMB", img.RepoTags[0], (img.Size / 1024 / 1024))
+					images = append(images, line)
 				}
-				line := fmt.Sprintf("%v, %vMB", img.RepoTags[0], (img.Size / 1024 / 1024))
-				images = append(images, line)
 			}
 			return c.JSON(200, map[string][]string{"images": images})
 		default:
