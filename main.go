@@ -32,12 +32,12 @@ func main() {
 		Format: `{"date":"${time_rfc3339}","ip":"${remote_ip}","method":"${method}","status":"${status}","response_time":"${latency_human}","uri":"${uri}","agent":"${user_agent}"}` + "\n",
 	}))
 
-	err = godotenv.Load("/home/krzysiek/go-apiV1-echo/.env")
+	err = godotenv.Load("/home/krzysiek/go-api-echo/.env")
 	if err != nil {
 		log.Fatal("cannot load .env file")
 	}
 
-	apiV1 := e.Group("/apiV1/v1")
+	apiV1 := e.Group("/api/v1")
 	apiV1.GET("/get-redis-data", GetRedisData(ctx, rdb))
 	apiV1.GET("/redis-info", GetRedisInfo(ctx, rdb))
 	apiV1.GET("/docker-info", GetDockerInfo(ctx, dockerClient))
