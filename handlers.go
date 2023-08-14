@@ -6,7 +6,6 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"os/exec"
 	"strconv"
@@ -181,7 +180,7 @@ func GetContainerLogs(ctx context.Context, dockerClient *client.Client) echo.Han
 
 		var buf bytes.Buffer
 		_, err = stdcopy.StdCopy(&buf, &buf, out)
-		if err != nil && err != io.EOF {
+		if err != nil {
 			log.Fatal(err)
 		}
 		return c.String(200, buf.String())
