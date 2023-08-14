@@ -1,17 +1,21 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"os/exec"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/labstack/echo/v4"
 	"github.com/redis/go-redis/v9"
 )
@@ -149,6 +153,35 @@ func RemoveContainer(ctx context.Context, dockerClient *client.Client) echo.Hand
 			}
 		}
 		return c.JSON(404, map[string]string{"not found": nameParam})
+	}
+}
+
+func GetContainerLogs(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		since, err := strconv.Atoi(c.QueryParam("since"))
+		containerName := c.QueryParam("container")
+		if err != nil {
+			return c.JSON(400, map[string]string{"payload": "wrong query param type, required number"})
+		}
+		options := types.ContainerLogsOptions{
+			ShowStdout: true,
+			ShowStderr: true,
+			Follow:     false,
+			Since:      time.Now().Add(-time.Duration(since) * time.Minute).Format(time.RFC3339),
+		}
+
+		out, err := dockerClient.ContainerLogs(context.Background(), containerName, options)
+		if err != nil {
+			panic(err)
+		}
+		defer out.Close()
+
+		var buf bytes.Buffer
+		_, err = stdcopy.StdCopy(&buf, &buf, out)
+		if err != nil && err != io.EOF {
+			log.Fatal(err)
+		}
+		return c.String(200, buf.String())
 	}
 }
 

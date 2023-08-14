@@ -41,6 +41,7 @@ func main() {
 	apiV1.GET("/get-redis-data", GetRedisData(ctx, rdb))
 	apiV1.GET("/redis-info", GetRedisInfo(ctx, rdb))
 	apiV1.GET("/docker-info", GetDockerInfo(ctx, dockerClient))
+	apiV1.GET("/docker-logs", GetContainerLogs(ctx, dockerClient))
 	apiV1.GET("/containers-up", UpContainerStack(ctx, dockerClient))
 	apiV1.DELETE("/container", RemoveContainer(ctx, dockerClient))
 	apiV1.DELETE("/container-metrics", DeleteContainerMetrics(ctx, rdb))
