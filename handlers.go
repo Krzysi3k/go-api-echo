@@ -159,9 +159,12 @@ func RemoveContainer(ctx context.Context, dockerClient *client.Client) echo.Hand
 func GetContainerLogs(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		since, err := strconv.Atoi(c.QueryParam("since"))
-		containerName := c.QueryParam("container")
 		if err != nil {
 			return c.JSON(400, map[string]string{"payload": "wrong query param type, required number"})
+		}
+		containerName := c.QueryParam("container")
+		if containerName == "" {
+			return c.JSON(400, map[string]string{"payload": "container query param is empty, required name"})
 		}
 		options := types.ContainerLogsOptions{
 			ShowStdout: true,
