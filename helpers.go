@@ -34,12 +34,12 @@ type JobOffer struct {
 // }
 
 func fetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
-	count := 50
-	cursor := uint64(0)
+	var count int64 = 50
+	var cursor uint64 = 0
 	var keyNames []string
 
 	for {
-		keys, nextCursor, err := rdb.Scan(ctx, cursor, "*job:offers", int64(count)).Result()
+		keys, nextCursor, err := rdb.Scan(ctx, cursor, "*job:offers", count).Result()
 		if err != nil {
 			log.Fatal("error while scanning keys", err)
 		}
