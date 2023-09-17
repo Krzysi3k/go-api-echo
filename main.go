@@ -40,6 +40,7 @@ func main() {
 	apiV1 := e.Group("/api/v1")
 	apiV1.GET("/get-redis-data", GetRedisData(ctx, rdb))
 	apiV1.GET("/redis-info", GetRedisInfo(ctx, rdb))
+	apiV1.DELETE("/redis-keys", DeleteRedisKeys(ctx, rdb))
 	apiV1.GET("/docker-info", GetDockerInfo(ctx, dockerClient))
 	apiV1.GET("/docker-logs", GetContainerLogs(ctx, dockerClient))
 	apiV1.GET("/containers-up", UpContainerStack(ctx, dockerClient))

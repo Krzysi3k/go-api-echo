@@ -202,6 +202,15 @@ func DeleteContainerMetrics(ctx context.Context, rdb *redis.Client) echo.Handler
 	}
 }
 
+func DeleteRedisKeys(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		keyName := c.QueryParam("key")
+		redisKeys := rdb.Keys(ctx, keyName).Val()
+		rdb.Del(ctx, redisKeys...)
+		return c.JSON(200, map[string][]string{"keys-removed": redisKeys})
+	}
+}
+
 func logError(err error) {
 	if err != nil {
 		log.Println(err)
