@@ -68,7 +68,7 @@ func GetRedisInfo(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 		keys := []string{
 			"vibration-sensor",
 			"door-state",
-			"rotate-option",
+			"humidity",
 			"washing-state",
 		}
 		val := rdb.MGet(ctx, keys...).Val()
@@ -208,6 +208,22 @@ func DeleteRedisKeys(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 		redisKeys := rdb.Keys(ctx, keyName).Val()
 		rdb.Del(ctx, redisKeys...)
 		return c.JSON(200, map[string][]string{"keys-removed": redisKeys})
+	}
+}
+
+func TestQueue(ctx context.Context, busyqueue chan struct{}) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		if len(busyqueue) > 0 {
+			return c.JSON(200, map[string]string{"payload": "request is already processing..."})
+		}
+		busyqueue <- struct{}{}
+		// log running process:
+		time.Sleep(time.Millisecond * 2200)
+		go func() {
+			// empty queue:
+			<-busyqueue
+		}()
+		return c.JSON(200, map[string]string{"payload": "processed!"})
 	}
 }
 
