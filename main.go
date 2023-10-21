@@ -43,13 +43,13 @@ func main() {
 	apiV1.GET("/redis-info", GetRedisInfo(context.Background(), rdb))
 	apiV1.DELETE("/redis-keys", DeleteRedisKeys(context.Background(), rdb))
 	apiV1.GET("/docker-info", GetDockerInfo(context.Background(), dockerClient))
-	apiV1.GET("/docker-logs", GetContainerLogs(context.Background(), dockerClient))
+	apiV1.GET("/docker-logs", GetContainerLogs(dockerClient))
 	apiV1.GET("/containers-up", UpContainerStack(context.Background(), dockerClient))
 	apiV1.DELETE("/container", RemoveContainer(context.Background(), dockerClient))
 	apiV1.DELETE("/container-metrics", DeleteContainerMetrics(context.Background(), rdb))
 	apiV1.GET("/random", randomHandler(context.Background(), rdb))
 	apiV1.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
-	apiV1.GET("/queue", TestQueue(context.Background(), busyqueue))
+	apiV1.GET("/queue", TestQueue(busyqueue))
 
 	e.Logger.Fatal(e.Start(":5001"))
 }

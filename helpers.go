@@ -19,20 +19,6 @@ type JobOffer struct {
 	PublishedTime time.Time `json:"-"`
 }
 
-// type JobOfferSlice []JobOffer
-
-// func (a JobOfferSlice) Len() int {
-// 	return len(a)
-// }
-
-// func (a JobOfferSlice) Less(i, j int) bool {
-// 	return a[i].PublishedTime.Before(a[j].PublishedTime)
-// }
-
-// func (a JobOfferSlice) Swap(i, j int) {
-// 	a[i], a[j] = a[j], a[i]
-// }
-
 func fetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
 	var count int64 = 50
 	var cursor uint64 = 0

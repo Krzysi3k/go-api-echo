@@ -155,7 +155,7 @@ func RemoveContainer(ctx context.Context, dockerClient *client.Client) echo.Hand
 	}
 }
 
-func GetContainerLogs(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
+func GetContainerLogs(dockerClient *client.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		since, err := strconv.Atoi(c.QueryParam("since"))
 		if err != nil {
@@ -211,7 +211,7 @@ func DeleteRedisKeys(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 	}
 }
 
-func TestQueue(ctx context.Context, busyqueue chan struct{}) echo.HandlerFunc {
+func TestQueue(busyqueue chan struct{}) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if len(busyqueue) > 0 {
 			return c.JSON(200, map[string]string{"payload": "request is already processing..."})
