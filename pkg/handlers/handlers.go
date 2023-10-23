@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"bytes"
@@ -22,15 +22,16 @@ import (
 //go:embed docker_compose_path.txt
 var composePath string
 
-func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
+func GetRedisData(rdb *redis.Client) echo.HandlerFunc {
 
 	return func(e echo.Context) error {
+		ctx := context.Background()
 		keyName := e.QueryParam("data")
 		if keyName == "" {
 			return e.JSON(400, map[string]string{"payload": "missing query string"})
 		}
 		if keyName == "job:offers" {
-			offers := fetchOffers(ctx, rdb)
+			offers := FetchOffers(ctx, rdb)
 			fromAmount := e.QueryParam("gt")
 			if fromAmount == "" {
 				return e.JSON(200, offers)
@@ -62,9 +63,10 @@ func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 	}
 }
 
-func GetRedisInfo(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
+func GetRedisInfo(rdb *redis.Client) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
+		ctx := context.Background()
 		keys := []string{
 			"vibration-sensor",
 			"door-state",
@@ -91,9 +93,10 @@ func GetRedisInfo(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 	}
 }
 
-func GetDockerInfo(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
+func GetDockerInfo(dockerClient *client.Client) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
+		ctx := context.Background()
 		queryParam := c.QueryParam("items")
 		switch queryParam {
 		case "containers":
@@ -123,9 +126,10 @@ func GetDockerInfo(ctx context.Context, dockerClient *client.Client) echo.Handle
 	}
 }
 
-func RemoveContainer(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
+func RemoveContainer(dockerClient *client.Client) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
+		ctx := context.Background()
 		nameParam := c.QueryParam("name")
 		stopParam := c.QueryParam("stop")
 		if nameParam == "" {
@@ -187,23 +191,25 @@ func GetContainerLogs(dockerClient *client.Client) echo.HandlerFunc {
 	}
 }
 
-func UpContainerStack(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
+func UpContainerStack(dockerClient *client.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		exec.Command("sh", composePath+"/up.sh").Run()
 		return c.JSON(200, map[string]string{"command": "docker-compose up"})
 	}
 }
 
-func DeleteContainerMetrics(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
+func DeleteContainerMetrics(rdb *redis.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx := context.Background()
 		metricKeys := rdb.Keys(ctx, "docker:metrics*").Val()
 		rdb.Del(ctx, metricKeys...)
 		return c.JSON(200, map[string][]string{"metrics-removed": metricKeys})
 	}
 }
 
-func DeleteRedisKeys(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
+func DeleteRedisKeys(rdb *redis.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx := context.Background()
 		keyName := c.QueryParam("key")
 		redisKeys := rdb.Keys(ctx, keyName).Val()
 		rdb.Del(ctx, redisKeys...)

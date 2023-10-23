@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 
 	"github.com/docker/docker/client"
@@ -11,6 +10,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/redis/go-redis/v9"
+
+	"go-api-echo/pkg/handlers"
+	"go-api-echo/pkg/metrics"
 )
 
 func main() {
@@ -38,18 +40,21 @@ func main() {
 
 	busyqueue := make(chan struct{}, 1)
 
+	// scraper := scraper.NewScraper("/usr/bin/chromedriver", "https://example.com", []string{"--headless"}, 1800)
+	// scraper.Get()
+
 	apiV1 := e.Group("/api/v1")
-	apiV1.GET("/get-redis-data", GetRedisData(context.Background(), rdb))
-	apiV1.GET("/redis-info", GetRedisInfo(context.Background(), rdb))
-	apiV1.DELETE("/redis-keys", DeleteRedisKeys(context.Background(), rdb))
-	apiV1.GET("/docker-info", GetDockerInfo(context.Background(), dockerClient))
-	apiV1.GET("/docker-logs", GetContainerLogs(dockerClient))
-	apiV1.GET("/containers-up", UpContainerStack(context.Background(), dockerClient))
-	apiV1.DELETE("/container", RemoveContainer(context.Background(), dockerClient))
-	apiV1.DELETE("/container-metrics", DeleteContainerMetrics(context.Background(), rdb))
-	apiV1.GET("/random", randomHandler(context.Background(), rdb))
+	apiV1.GET("/get-redis-data", handlers.GetRedisData(rdb))
+	apiV1.GET("/redis-info", handlers.GetRedisInfo(rdb))
+	apiV1.DELETE("/redis-keys", handlers.DeleteRedisKeys(rdb))
+	apiV1.GET("/docker-info", handlers.GetDockerInfo(dockerClient))
+	apiV1.GET("/docker-logs", handlers.GetContainerLogs(dockerClient))
+	apiV1.GET("/containers-up", handlers.UpContainerStack(dockerClient))
+	apiV1.DELETE("/container", handlers.RemoveContainer(dockerClient))
+	apiV1.DELETE("/container-metrics", handlers.DeleteContainerMetrics(rdb))
+	apiV1.GET("/random", metrics.RandomHandler(rdb))
 	apiV1.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
-	apiV1.GET("/queue", TestQueue(busyqueue))
+	apiV1.GET("/queue", handlers.TestQueue(busyqueue))
 
 	e.Logger.Fatal(e.Start(":5001"))
 }

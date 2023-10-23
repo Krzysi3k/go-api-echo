@@ -1,4 +1,4 @@
-package main
+package metrics
 
 import (
 	"context"
@@ -28,8 +28,9 @@ func init() {
 	prometheus.MustRegister(totalRequests)
 }
 
-func randomHandler(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
+func RandomHandler(rdb *redis.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx := context.Background()
 		value := rand.Intn(100) + 1
 		activeRequests.Set(float64(value))
 		defer activeRequests.Dec()

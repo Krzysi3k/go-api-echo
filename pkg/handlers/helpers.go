@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"context"
@@ -19,7 +19,7 @@ type JobOffer struct {
 	PublishedTime time.Time `json:"-"`
 }
 
-func fetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
+func FetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
 	var count int64 = 50
 	var cursor uint64 = 0
 	var keyNames []string
