@@ -40,9 +40,6 @@ func main() {
 
 	busyqueue := make(chan struct{}, 1)
 
-	// scraper := scraper.NewScraper("/usr/bin/chromedriver", "https://example.com", []string{"--headless"}, 1800)
-	// scraper.Get()
-
 	apiV1 := e.Group("/api/v1")
 	apiV1.GET("/get-redis-data", handlers.GetRedisData(rdb))
 	apiV1.GET("/redis-info", handlers.GetRedisInfo(rdb))
