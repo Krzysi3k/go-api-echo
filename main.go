@@ -38,8 +38,6 @@ func main() {
 		log.Fatal("cannot load .env file")
 	}
 
-	busyqueue := make(chan struct{}, 1)
-
 	apiV1 := e.Group("/api/v1")
 	apiV1.GET("/get-redis-data", handlers.GetRedisData(rdb))
 	apiV1.GET("/redis-info", handlers.GetRedisInfo(rdb))
@@ -51,7 +49,7 @@ func main() {
 	apiV1.DELETE("/container-metrics", handlers.DeleteContainerMetrics(rdb))
 	apiV1.GET("/random", metrics.RandomHandler(rdb))
 	apiV1.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
-	apiV1.GET("/queue", handlers.TestQueue(busyqueue))
+	apiV1.POST("/webhook", handlers.ProcessIncomingMessage())
 
 	e.Logger.Fatal(e.Start(":5001"))
 }

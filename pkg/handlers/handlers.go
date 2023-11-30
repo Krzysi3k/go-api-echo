@@ -217,22 +217,6 @@ func DeleteRedisKeys(rdb *redis.Client) echo.HandlerFunc {
 	}
 }
 
-func TestQueue(busyqueue chan struct{}) echo.HandlerFunc {
-	return func(c echo.Context) error {
-		if len(busyqueue) > 0 {
-			return c.JSON(200, map[string]string{"payload": "request is already processing..."})
-		}
-		busyqueue <- struct{}{}
-		// log running process:
-		time.Sleep(time.Millisecond * 2200)
-		go func() {
-			// empty queue:
-			<-busyqueue
-		}()
-		return c.JSON(200, map[string]string{"payload": "processed!"})
-	}
-}
-
 func logError(err error) {
 	if err != nil {
 		log.Println(err)
