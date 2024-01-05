@@ -54,9 +54,9 @@ func ProcessIncomingMessage() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
 		tsNow := time.Now().UnixMilli()
-		tsTwoMinAgo := tsNow - (1000 * 60 * 2)
+		tsSince := tsNow - (1000 * 60 * 4)
 		grafanaUrl := os.Getenv("GRAFANA_URL")
-		url := fmt.Sprintf("%s/api/annotations/?from=%d&to=%d", grafanaUrl, tsTwoMinAgo, tsNow)
+		url := fmt.Sprintf("%s/api/annotations/?from=%d&to=%d", grafanaUrl, tsSince, tsNow)
 
 		client := &http.Client{}
 		req, err := http.NewRequest("GET", url, nil)
