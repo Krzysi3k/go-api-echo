@@ -52,7 +52,7 @@ func GetRedisData(rdb *redis.Client) echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(404, map[string]string{"payload": "key not found"})
 		}
-		if strings.Contains(keyName, "docker:metrics:") || keyName == "termometr-payload" {
+		if strings.Contains(keyName, "docker:metrics:") || keyName == "termometr-payload" || keyName == "termometr-payload-imgw" {
 			return e.String(200, val)
 		}
 		if json.Valid([]byte(val)) {
