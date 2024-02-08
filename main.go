@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/docker/docker/client"
@@ -38,15 +39,17 @@ func main() {
 		log.Fatal("cannot load .env file")
 	}
 
+	ctx := context.Background()
+
 	apiV1 := e.Group("/api/v1")
-	apiV1.GET("/get-redis-data", handlers.GetRedisData(rdb))
-	apiV1.GET("/redis-info", handlers.GetRedisInfo(rdb))
-	apiV1.DELETE("/redis-keys", handlers.DeleteRedisKeys(rdb))
-	apiV1.GET("/docker-info", handlers.GetDockerInfo(dockerClient))
-	apiV1.GET("/docker-logs", handlers.GetContainerLogs(dockerClient))
+	apiV1.GET("/get-redis-data", handlers.GetRedisData(ctx, rdb))
+	apiV1.GET("/redis-info", handlers.GetRedisInfo(ctx, rdb))
+	apiV1.DELETE("/redis-keys", handlers.DeleteRedisKeys(ctx, rdb))
+	apiV1.GET("/docker-info", handlers.GetDockerInfo(ctx, dockerClient))
+	apiV1.GET("/docker-logs", handlers.GetContainerLogs(ctx, dockerClient))
 	apiV1.GET("/containers-up", handlers.UpContainerStack(dockerClient))
-	apiV1.DELETE("/container", handlers.RemoveContainer(dockerClient))
-	apiV1.DELETE("/container-metrics", handlers.DeleteContainerMetrics(rdb))
+	apiV1.DELETE("/container", handlers.RemoveContainer(ctx, dockerClient))
+	apiV1.DELETE("/container-metrics", handlers.DeleteContainerMetrics(ctx, rdb))
 	apiV1.GET("/random", metrics.RandomHandler(rdb))
 	apiV1.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 	apiV1.POST("/webhook", handlers.ProcessIncomingMessage())

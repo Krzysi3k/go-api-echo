@@ -22,10 +22,10 @@ import (
 //go:embed docker_compose_path.txt
 var composePath string
 
-func GetRedisData(rdb *redis.Client) echo.HandlerFunc {
+func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 
 	return func(e echo.Context) error {
-		ctx := context.Background()
+		// ctx := context.Background()
 		keyName := e.QueryParam("data")
 		if keyName == "" {
 			return e.JSON(400, map[string]string{"payload": "missing query string"})
@@ -63,10 +63,10 @@ func GetRedisData(rdb *redis.Client) echo.HandlerFunc {
 	}
 }
 
-func GetRedisInfo(rdb *redis.Client) echo.HandlerFunc {
+func GetRedisInfo(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		ctx := context.Background()
+		// ctx := context.Background()
 		keys := []string{
 			"vibration-sensor",
 			"door-state",
@@ -93,10 +93,10 @@ func GetRedisInfo(rdb *redis.Client) echo.HandlerFunc {
 	}
 }
 
-func GetDockerInfo(dockerClient *client.Client) echo.HandlerFunc {
+func GetDockerInfo(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		ctx := context.Background()
+		// ctx := context.Background()
 		queryParam := c.QueryParam("items")
 		switch queryParam {
 		case "containers":
@@ -126,10 +126,10 @@ func GetDockerInfo(dockerClient *client.Client) echo.HandlerFunc {
 	}
 }
 
-func RemoveContainer(dockerClient *client.Client) echo.HandlerFunc {
+func RemoveContainer(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		ctx := context.Background()
+		// ctx := context.Background()
 		nameParam := c.QueryParam("name")
 		stopParam := c.QueryParam("stop")
 		if nameParam == "" {
@@ -159,7 +159,7 @@ func RemoveContainer(dockerClient *client.Client) echo.HandlerFunc {
 	}
 }
 
-func GetContainerLogs(dockerClient *client.Client) echo.HandlerFunc {
+func GetContainerLogs(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		since, err := strconv.Atoi(c.QueryParam("since"))
 		if err != nil {
@@ -176,7 +176,7 @@ func GetContainerLogs(dockerClient *client.Client) echo.HandlerFunc {
 			Since:      time.Now().Add(-time.Duration(since) * time.Minute).Format(time.RFC3339),
 		}
 
-		out, err := dockerClient.ContainerLogs(context.Background(), containerName, options)
+		out, err := dockerClient.ContainerLogs(ctx, containerName, options)
 		if err != nil {
 			panic(err)
 		}
@@ -198,18 +198,18 @@ func UpContainerStack(dockerClient *client.Client) echo.HandlerFunc {
 	}
 }
 
-func DeleteContainerMetrics(rdb *redis.Client) echo.HandlerFunc {
+func DeleteContainerMetrics(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx := context.Background()
+		// ctx := context.Background()
 		metricKeys := rdb.Keys(ctx, "docker:metrics*").Val()
 		rdb.Del(ctx, metricKeys...)
 		return c.JSON(200, map[string][]string{"metrics-removed": metricKeys})
 	}
 }
 
-func DeleteRedisKeys(rdb *redis.Client) echo.HandlerFunc {
+func DeleteRedisKeys(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx := context.Background()
+		// ctx := context.Background()
 		keyName := c.QueryParam("key")
 		redisKeys := rdb.Keys(ctx, keyName).Val()
 		rdb.Del(ctx, redisKeys...)
