@@ -14,8 +14,18 @@ import (
 
 	"go-api-echo/pkg/handlers"
 	"go-api-echo/pkg/metrics"
+
+	_ "go-api-echo/docs"
+
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
+// @title Homestack API
+// @version 1.0
+// @description This is helper API for IoT and other things.
+// @host localhost:5001
+// @BasePath /api/v1
+// @schemes http
 func main() {
 
 	rdb := redis.NewClient(&redis.Options{
@@ -30,6 +40,7 @@ func main() {
 	}
 
 	e := echo.New()
+	e.Use(middleware.CORS())
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"date":"${time_rfc3339}","ip":"${remote_ip}","method":"${method}","status":"${status}","response_time":"${latency_human}","uri":"${uri}","agent":"${user_agent}"}` + "\n",
 	}))
@@ -53,6 +64,8 @@ func main() {
 	apiV1.GET("/random", metrics.RandomHandler(rdb))
 	apiV1.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 	apiV1.POST("/webhook", handlers.ProcessIncomingMessage())
+
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	e.Logger.Fatal(e.Start(":5001"))
 }

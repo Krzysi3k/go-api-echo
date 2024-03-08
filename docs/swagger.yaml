@@ -1,0 +1,27 @@
+basePath: /api/v1
+host: localhost:5001
+info:
+  contact: {}
+  description: This is helper API for IoT and other things.
+  title: Homestack API
+  version: "1.0"
+paths:
+  /redis-info:
+    get:
+      consumes:
+      - '*/*'
+      description: shows vibration-sensor, door-state. humiditym and washing-state.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show most used keys from Redis.
+      tags:
+      - redis
+schemes:
+- http
+swagger: "2.0"

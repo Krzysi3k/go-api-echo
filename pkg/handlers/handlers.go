@@ -63,6 +63,13 @@ func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 	}
 }
 
+// @Summary Show most used keys from Redis.
+// @Description shows vibration-sensor, door-state. humiditym and washing-state.
+// @Tags redis
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /redis-info [get]
 func GetRedisInfo(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 
 	return func(c echo.Context) error {

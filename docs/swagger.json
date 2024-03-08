@@ -1,0 +1,40 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is helper API for IoT and other things.",
+        "title": "Homestack API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:5001",
+    "basePath": "/api/v1",
+    "paths": {
+        "/redis-info": {
+            "get": {
+                "description": "shows vibration-sensor, door-state. humiditym and washing-state.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "redis"
+                ],
+                "summary": "Show most used keys from Redis.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
