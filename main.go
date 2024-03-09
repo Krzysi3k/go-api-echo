@@ -23,9 +23,9 @@ import (
 // @title Homestack API
 // @version 1.0
 // @description This is helper API for IoT and other things.
-// @host 192.168.0.123:5001
+// @host api.wyselab.pl
 // @BasePath /api/v1
-// @schemes http https
+// @schemes https
 func main() {
 
 	rdb := redis.NewClient(&redis.Options{
@@ -43,7 +43,10 @@ func main() {
 	// e.Use(middleware.CORS())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowHeaders: []string{"*"},
+		// AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
+		// 	"X-Requested-With", "Content-Type", "Authorization", "X-Api-Key", "Access-Control-Allow-Origin",
+		// },
 	}))
 	// e.Use(middleware.SecureWithConfig(middleware.DefaultSecureConfig))
 

@@ -1,5 +1,5 @@
 basePath: /api/v1
-host: 192.168.0.123:5001
+host: api.wyselab.pl
 info:
   contact: {}
   description: This is helper API for IoT and other things.
@@ -23,6 +23,5 @@ paths:
       tags:
       - redis
 schemes:
-- http
 - https
 swagger: "2.0"
