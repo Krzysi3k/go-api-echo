@@ -1,5 +1,5 @@
 basePath: /api/v1
-host: localhost:5001
+host: 192.168.0.123:5001
 info:
   contact: {}
   description: This is helper API for IoT and other things.
@@ -24,4 +24,5 @@ paths:
       - redis
 schemes:
 - http
+- https
 swagger: "2.0"

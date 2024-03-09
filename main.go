@@ -23,9 +23,9 @@ import (
 // @title Homestack API
 // @version 1.0
 // @description This is helper API for IoT and other things.
-// @host localhost:5001
+// @host 192.168.0.123:5001
 // @BasePath /api/v1
-// @schemes http
+// @schemes http https
 func main() {
 
 	rdb := redis.NewClient(&redis.Options{
@@ -40,7 +40,13 @@ func main() {
 	}
 
 	e := echo.New()
-	e.Use(middleware.CORS())
+	// e.Use(middleware.CORS())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+	// e.Use(middleware.SecureWithConfig(middleware.DefaultSecureConfig))
+
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"date":"${time_rfc3339}","ip":"${remote_ip}","method":"${method}","status":"${status}","response_time":"${latency_human}","uri":"${uri}","agent":"${user_agent}"}` + "\n",
 	}))
