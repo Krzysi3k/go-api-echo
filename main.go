@@ -23,9 +23,9 @@ import (
 // @title Homestack API
 // @version 1.0
 // @description This is helper API for IoT and other things.
-// @host api.wyselab.pl
+// @host 192.168.0.123:5001
 // @BasePath /api/v1
-// @schemes https
+// @schemes http
 func main() {
 
 	rdb := redis.NewClient(&redis.Options{

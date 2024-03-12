@@ -45,9 +45,9 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "api.wyselab.pl",
+	Host:             "192.168.0.123:5001",
 	BasePath:         "/api/v1",
-	Schemes:          []string{"https"},
+	Schemes:          []string{"http"},
 	Title:            "Homestack API",
 	Description:      "This is helper API for IoT and other things.",
 	InfoInstanceName: "swagger",
