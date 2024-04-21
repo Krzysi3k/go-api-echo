@@ -100,6 +100,14 @@ func GetRedisInfo(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 	}
 }
 
+// @Summary Show docker images or containers.
+// @Description shows docker containers/images basic information.
+// @Tags docker
+// @Accept */*
+// @Produce json
+// @Param items query string false "item type: containers or images"
+// @Success 200 {object} map[string]interface{}
+// @Router /docker-info [get]
 func GetDockerInfo(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
 
 	return func(c echo.Context) error {
@@ -166,6 +174,15 @@ func RemoveContainer(ctx context.Context, dockerClient *client.Client) echo.Hand
 	}
 }
 
+// @Summary Show docker container logs.
+// @Description shows docker logs of running container.
+// @Tags docker
+// @Accept */*
+// @Produce plain
+// @Param container query string false "container name"
+// @Param since query int false "since when in minutes"
+// @Success 200 {string} string
+// @Router /docker-logs [get]
 func GetContainerLogs(ctx context.Context, dockerClient *client.Client) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		since, err := strconv.Atoi(c.QueryParam("since"))

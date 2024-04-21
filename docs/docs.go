@@ -15,6 +15,75 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/docker-info": {
+            "get": {
+                "description": "shows docker containers/images basic information.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "docker"
+                ],
+                "summary": "Show docker images or containers.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "item type: containers or images",
+                        "name": "items",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/docker-logs": {
+            "get": {
+                "description": "shows docker logs of running container.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "docker"
+                ],
+                "summary": "Show docker container logs.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "container name",
+                        "name": "container",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "since when in minutes",
+                        "name": "since",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/redis-info": {
             "get": {
                 "description": "shows vibration-sensor, door-state. humiditym and washing-state.",

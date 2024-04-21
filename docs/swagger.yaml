@@ -6,6 +6,51 @@ info:
   title: Homestack API
   version: "1.0"
 paths:
+  /docker-info:
+    get:
+      consumes:
+      - '*/*'
+      description: shows docker containers/images basic information.
+      parameters:
+      - description: 'item type: containers or images'
+        in: query
+        name: items
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show docker images or containers.
+      tags:
+      - docker
+  /docker-logs:
+    get:
+      consumes:
+      - '*/*'
+      description: shows docker logs of running container.
+      parameters:
+      - description: container name
+        in: query
+        name: container
+        type: string
+      - description: since when in minutes
+        in: query
+        name: since
+        type: integer
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Show docker container logs.
+      tags:
+      - docker
   /redis-info:
     get:
       consumes:
