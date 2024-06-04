@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"sort"
-	"time"
+	//"sort"
+	//"time"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -15,8 +15,8 @@ type JobOffer struct {
 	Title         string    `json:"title"`
 	Currency      string    `json:"currency"`
 	Maxsalary     int       `json:"maxsalary"`
-	Published     string    `json:"published"`
-	PublishedTime time.Time `json:"-"`
+	//Published     string    `json:"published"`
+	//PublishedTime time.Time `json:"-"`
 }
 
 func FetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
@@ -48,17 +48,17 @@ func FetchOffers(ctx context.Context, rdb *redis.Client) []JobOffer {
 		}
 	}
 
-	for idx, o := range allOffers {
-		date, err := time.Parse("2006-01-02", o.Published)
-		if err != nil {
-			log.Fatal("Error parsing date:", err)
-		}
-		allOffers[idx].PublishedTime = date
-	}
-
-	sort.Slice(allOffers, func(i, j int) bool {
-		return allOffers[i].PublishedTime.After(allOffers[j].PublishedTime)
-	})
+//	for idx, o := range allOffers {
+//		date, err := time.Parse("2006-01-02", o.Published)
+//		if err != nil {
+//			log.Fatal("Error parsing date:", err)
+//		}
+//		allOffers[idx].PublishedTime = date
+//	}
+//
+//	sort.Slice(allOffers, func(i, j int) bool {
+//		return allOffers[i].PublishedTime.After(allOffers[j].PublishedTime)
+//	})
 
 	return allOffers
 }
