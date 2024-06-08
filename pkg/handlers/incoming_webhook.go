@@ -48,7 +48,7 @@ type Values struct {
 	C *int64   `json:"C,omitempty"`
 }
 
-var reAlertName = regexp.MustCompile(`alertname=[a-zA-Z0-9\-\s]+,`)
+var reAlertName = regexp.MustCompile(`alertname=([^,]*)`)
 
 func ProcessIncomingMessage() echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -86,11 +86,11 @@ func ProcessIncomingMessage() echo.HandlerFunc {
 		var sb strings.Builder
 		for _, an := range ans {
 			if an.Data.Values.A != nil && strings.Contains(an.NewState, "Alerting") {
-				result := reAlertName.Find([]byte(an.Text))
-				chunks := strings.Split(string(result), "=")
-				if len(chunks) > 1 {
-					sb.WriteString(chunks[1] + "\n")
-					sb.WriteString(fmt.Sprintf("actual temp: %v\n", *an.Data.Values.A))
+				matched := reAlertName.FindString(an.Text)
+				if matched != "" {
+					matchedval := strings.Replace(matched, "alertname=", "", -1)
+					sb.WriteString(matchedval + "\n")
+					sb.WriteString(fmt.Sprintf("actual value is: %v\n", *an.Data.Values.A))
 				}
 			}
 		}
