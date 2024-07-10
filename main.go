@@ -50,9 +50,9 @@ func main() {
 	}))
 	// e.Use(middleware.SecureWithConfig(middleware.DefaultSecureConfig))
 
-	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: `{"date":"${time_rfc3339}","ip":"${remote_ip}","method":"${method}","status":"${status}","response_time":"${latency_human}","uri":"${uri}","agent":"${user_agent}"}` + "\n",
-	}))
+	//e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+	//	Format: `{"date":"${time_rfc3339}","ip":"${remote_ip}","method":"${method}","status":"${status}","response_time":"${latency_human}","uri":"${uri}","agent":"${user_agent}"}` + "\n",
+	//}))
 
 	err = godotenv.Load("/home/krzysiek/go-api-echo/.env")
 	if err != nil {
