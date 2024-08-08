@@ -22,6 +22,13 @@ import (
 //go:embed docker_compose_path.txt
 var composePath string
 
+var validKeys = map[string]bool{
+	"termometr-payload":      true,
+	"termometr-payload-imgw": true,
+	"termometr-wew-payload":  true,
+	"air-quality-gios":       true,
+}
+
 func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 
 	return func(e echo.Context) error {
@@ -52,7 +59,7 @@ func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
 		if err != nil {
 			return e.JSON(404, map[string]string{"payload": "key not found"})
 		}
-		if strings.Contains(keyName, "docker:metrics:") || keyName == "termometr-payload" || keyName == "termometr-payload-imgw" || keyName == "air-quality-gios" {
+		if strings.Contains(keyName, "docker:metrics:") || validKeys[keyName] {
 			return e.String(200, val)
 		}
 		if json.Valid([]byte(val)) {
