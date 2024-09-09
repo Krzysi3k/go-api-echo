@@ -103,6 +103,10 @@ func ProcessIncomingMessage() echo.HandlerFunc {
 			return err
 		}
 
+		if err = PostDiscordMessage(sbResult); err != nil {
+			return err
+		}
+
 		return c.String(200, sbResult)
 	}
 }
@@ -112,5 +116,13 @@ func PostTelegramMessage(msg string) error {
 	data := `{"text":"` + msg + `","chat_id":"` + os.Getenv("TELEGRAM_CHAT_ID") + `"}`
 	buf := bytes.NewBuffer([]byte(data))
 	_, err := http.Post("https://api.telegram.org/bot"+API_KEY+"/sendMessage", "application/json", buf)
+	return err
+}
+
+func PostDiscordMessage(msg string) error {
+	WEBHOOK_URL := os.Getenv("DISCORD_HOME_AUTOMATION_HOOK")
+	data := `{"content":"` + msg + `"}`
+	buf := bytes.NewBuffer([]byte(data))
+	_, err := http.Post(WEBHOOK_URL, "application/json", buf)
 	return err
 }
