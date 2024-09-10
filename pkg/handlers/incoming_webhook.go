@@ -89,16 +89,17 @@ func ProcessIncomingMessage() echo.HandlerFunc {
 				matched := reAlertName.FindString(an.Text)
 				if matched != "" {
 					matchedval := strings.Replace(matched, "alertname=", "", -1)
-					sb.WriteString(matchedval + "\n")
-					sb.WriteString(fmt.Sprintf("actual value is: %v\n", *an.Data.Values.A))
+					sb.WriteString(matchedval + `\n`)
+					sb.WriteString("actual value is: " + fmt.Sprintf("%v", *an.Data.Values.A) + `\n`)
+					// sb.WriteString(fmt.Sprintf("actual value is: %v\n", *an.Data.Values.A))
 				}
 			}
 		}
 		sbResult := sb.String()
+		// log.Println("result: ", sbResult)
 		if len(sbResult) == 0 {
 			return nil
 		}
-
 		if err = PostTelegramMessage(sbResult); err != nil {
 			return err
 		}
