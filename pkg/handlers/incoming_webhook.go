@@ -100,9 +100,9 @@ func ProcessIncomingMessage() echo.HandlerFunc {
 		if len(sbResult) == 0 {
 			return nil
 		}
-		if err = PostTelegramMessage(sbResult); err != nil {
-			return err
-		}
+		// if err = PostTelegramMessage(sbResult); err != nil {
+		// 	return err
+		// }
 
 		if err = PostDiscordMessage(sbResult); err != nil {
 			return err
