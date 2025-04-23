@@ -27,9 +27,9 @@ var validKeys = map[string]bool{
 	"termometr-payload-imgw": true,
 	"termometr-wew-payload":  true,
 	"air-quality-gios":       true,
-        "power:usage:gniazdko-1": true,
-        "power:usage:gniazdko-3": true,
-        "power:usage:gniazdko-4": true,
+	"power:usage:gniazdko-1": true,
+	"power:usage:gniazdko-3": true,
+	"power:usage:gniazdko-4": true,
 }
 
 func GetRedisData(ctx context.Context, rdb *redis.Client) echo.HandlerFunc {
