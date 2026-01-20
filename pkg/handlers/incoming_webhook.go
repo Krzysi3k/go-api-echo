@@ -54,7 +54,7 @@ func ProcessIncomingMessage() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
 		tsNow := time.Now().UnixMilli()
-		tsSince := tsNow - (1000 * 60 * 4)
+		tsSince := tsNow - (1000 * 60 * 10) // last 10 minutes
 		grafanaUrl := os.Getenv("GRAFANA_URL")
 		url := fmt.Sprintf("%s/api/annotations/?from=%d&to=%d", grafanaUrl, tsSince, tsNow)
 
@@ -65,7 +65,7 @@ func ProcessIncomingMessage() echo.HandlerFunc {
 		}
 
 		req.Header.Add("Authorization", os.Getenv("GRAFANA_BASIC_AUTH"))
-		time.Sleep(time.Second * 2) // Wait for grafana to populate Annotations
+		time.Sleep(time.Second * 5) // Wait for grafana to populate Annotations
 		res, err := client.Do(req)
 		if err != nil {
 			return err
